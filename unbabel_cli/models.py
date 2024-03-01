@@ -15,3 +15,9 @@ class TranslationEvent:
 
     def __str__(self) -> str:
         return f"Translation Event - {self.client_name} {self.timestamp}"
+
+
+@dataclass
+class MinuteStats:
+    total_duration: int
+    nr_events: int

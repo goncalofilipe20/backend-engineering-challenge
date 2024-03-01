@@ -1,6 +1,9 @@
-import typer
 import os
+import typer
+
 from .data import read_event
+from .services import MADeliveryTimeService
+
 
 app = typer.Typer()
 
@@ -26,6 +29,6 @@ def main(
     if window_size <= 0:
         raise typer.BadParameter("window size must be a positive integer")
 
-    # to replace
-    for event in read_event(input_file):
-        print(event)
+    input_source = read_event(input_file)
+    moving_average_service = MADeliveryTimeService(input_source, window_size)
+    moving_average_service.process_events()

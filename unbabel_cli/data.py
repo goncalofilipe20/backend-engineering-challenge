@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
-from .constants import DATE_FORMAT
+
+from .constants import INPUT_DATE_FORMAT
 from .models import TranslationEvent
 
 
@@ -14,7 +15,7 @@ def read_event(input_file: str):
 
 def parse_event(event_data: dict) -> TranslationEvent:
     timestamp_str = event_data["timestamp"]
-    timestamp_datetime = datetime.strptime(timestamp_str, DATE_FORMAT)
+    timestamp_datetime = datetime.strptime(timestamp_str, INPUT_DATE_FORMAT)
 
     return TranslationEvent(
         timestamp=timestamp_datetime,
