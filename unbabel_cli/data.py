@@ -1,8 +1,13 @@
 import json
+import os
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 from .constants import INPUT_DATE_FORMAT
 from .models import TranslationEvent
+
+
+# ----------------------------- Input --------------------------------------
 
 
 def read_event(input_file: str):
@@ -27,3 +32,36 @@ def parse_event(event_data: dict) -> TranslationEvent:
         nr_words=event_data["nr_words"],
         duration=event_data["duration"],
     )
+
+
+# ----------------------------- Output --------------------------------------
+
+
+class OutputSource(ABC):
+
+    @abstractmethod
+    def write(self, data):
+        raise NotImplementedError()
+
+
+class FileOutputSource(OutputSource):
+
+    def __init__(self, output_file: str) -> None:
+        self.output_file = output_file
+
+    def write(self, data):
+        mode = "w" if not os.path.exists(self.output_file) else "a"
+        appending = mode == "a"
+
+        with open(self.output_file, mode) as file:
+            json_str = json.dumps(data)
+            if appending:
+                file.write("\n")
+            file.write(json_str)
+
+
+def get_output_file_name(input_file_name: str):
+    extension_index = input_file_name.rindex(".")
+    name = input_file_name[:extension_index]
+    extension = input_file_name[extension_index:]
+    return f"{name}_output.{extension}"

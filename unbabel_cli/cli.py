@@ -1,7 +1,7 @@
 import os
 import typer
 
-from .data import read_event
+from .data import get_output_file_name, read_event, FileOutputSource
 from .services import MADeliveryTimeService
 
 
@@ -20,6 +20,7 @@ def main(
         10, "--window_size", "-w", help="Number of past minutes to consider."
     ),
 ):
+    # validations
     if input_file is None:
         raise typer.BadParameter("input file argument is mandatory")
 
@@ -29,6 +30,13 @@ def main(
     if window_size <= 0:
         raise typer.BadParameter("window size must be a positive integer")
 
+    # input / output
     input_source = read_event(input_file)
-    moving_average_service = MADeliveryTimeService(input_source, window_size)
+    output_file_name = get_output_file_name(input_file)
+    output_source = FileOutputSource(output_file_name)
+
+    # process events
+    moving_average_service = MADeliveryTimeService(
+        input_source, window_size, output_source
+    )
     moving_average_service.process_events()

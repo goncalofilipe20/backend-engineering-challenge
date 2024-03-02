@@ -2,15 +2,20 @@ from datetime import datetime, timedelta
 from typing import Generator, List
 
 from .constants import OUTPUT_DATE_FORMAT
+from .data import OutputSource
 from .models import TranslationEvent, MinuteStats
 
 
 class MADeliveryTimeService:
 
     def __init__(
-        self, input_source: Generator[TranslationEvent, None, None], window_size: int
+        self,
+        input_source: Generator[TranslationEvent, None, None],
+        window_size: int,
+        output_source: OutputSource,
     ) -> None:
         self.input_source = input_source
+        self.output_source = output_source
         self.window_size = window_size
 
         # algorithm status
@@ -61,9 +66,13 @@ class MADeliveryTimeService:
     def register_minute(self, minute):
         minute_datetime = minute.strftime(OUTPUT_DATE_FORMAT)
         minute_moving_average = self.current_moving_average()
-        print(
-            f"date: {minute_datetime}, average_delivery_time: {minute_moving_average}"
-        )
+
+        minute_data = {
+            "date": minute_datetime,
+            "average_delivery_time": minute_moving_average,
+        }
+
+        self.output_source.write(minute_data)
 
     def update_window_stats(self):
         minute_history = MinuteStats(
