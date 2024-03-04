@@ -85,9 +85,9 @@ class MADeliveryTimeService:
     def save_window_history(self):
         rounded_datetime = self.current_event.timestamp.replace(second=0, microsecond=0)
         if self.current_event.timestamp == rounded_datetime:
-            minute_key = rounded_datetime + timedelta(minutes=1)
-        else:
             minute_key = rounded_datetime
+        else:
+            minute_key = rounded_datetime + timedelta(minutes=1)
 
         if minute_key in self.window_history:
             minute_stats = self.window_history[minute_key]
@@ -101,7 +101,7 @@ class MADeliveryTimeService:
             )
 
     def update_window_history(self):
-        shift = len(self.window_history) > 0 and self.window[0] > next(
+        shift = len(self.window_history) > 0 and self.window[0] >= next(
             iter(self.window_history)
         )
 
