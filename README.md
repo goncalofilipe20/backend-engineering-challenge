@@ -43,7 +43,7 @@ This command will install all the required dependencies specified in the pyproje
 After installing the dependencies, you can run the CLI application using Poetry script. For example:
 
 ```
-unbabel-cli --i ./resources/data.jsonl --w 10
+unbabel-cli -i ./resources/data.jsonl -w 10
 ```
 
 ### Additional Commands
