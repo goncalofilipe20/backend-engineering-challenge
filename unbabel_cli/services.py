@@ -29,14 +29,19 @@ class MADeliveryTimeService:
 
     def process_events(self):
         for event in self.input_source:
+            # 1 - read event
             self.current_event = event
+
+            # 2 - check current window
             changed = self.update_window()
 
+            # 3 - register the processed minute
             while changed:
                 self.register_minute(self.window[1] - timedelta(minutes=1))
                 self.update_window_history()
                 changed = self.update_window()
 
+            # 4 - save current event stats
             self.add_event_stats()
             self.save_window_history()
 
@@ -51,6 +56,7 @@ class MADeliveryTimeService:
                 second=0, microsecond=0
             )
 
+            # inclusive right boundary
             if self.current_event.timestamp == rounded_datetime:
                 window_max = rounded_datetime
             else:
@@ -72,6 +78,7 @@ class MADeliveryTimeService:
         return True
 
     def register_minute(self, minute):
+        # save minute MA result
         minute_datetime = minute.strftime(OUTPUT_DATE_FORMAT)
         minute_moving_average = self.current_moving_average()
 
@@ -83,17 +90,20 @@ class MADeliveryTimeService:
         self.output_source.write(minute_data)
 
     def save_window_history(self):
+        # the minute in which the event is accounted
         rounded_datetime = self.current_event.timestamp.replace(second=0, microsecond=0)
         if self.current_event.timestamp == rounded_datetime:
             minute_key = rounded_datetime
         else:
             minute_key = rounded_datetime + timedelta(minutes=1)
 
+        # this minute already has history
         if minute_key in self.window_history:
             minute_stats = self.window_history[minute_key]
             minute_stats.total_duration += self.current_event.duration
             minute_stats.nr_events += 1
 
+        # new minute
         else:
             self.window_history[minute_key] = MinuteStats(
                 total_duration=self.current_event.duration,
@@ -112,10 +122,12 @@ class MADeliveryTimeService:
             self.window_counter -= stats_to_remove.nr_events
 
     def current_moving_average(self):
+        # average duration of the events within the window
         if self.window_counter == 0:
             return 0
         return self.window_total / self.window_counter
 
     def add_event_stats(self):
+        # add event duration
         self.window_total += self.current_event.duration
         self.window_counter += 1

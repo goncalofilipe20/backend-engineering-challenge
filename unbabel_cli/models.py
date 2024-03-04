@@ -21,3 +21,6 @@ class TranslationEvent:
 class MinuteStats:
     total_duration: int
     nr_events: int
+
+    def __str__(self) -> str:
+        return f"Minute Stats - {self.total_duration} {self.nr_events}"

@@ -14,6 +14,9 @@ class OutputSourceMock:
 
 class TestMovingAverageService:
     def test_events_different_minutes_window_size_1(self):
+        """
+        Test events on consecutive and different minutes, window size 1.
+        """
         events = [
             translation_event("2018-12-26 18:12:08.509654", 10),
             translation_event("2018-12-26 18:13:08.509654", 30),
@@ -31,6 +34,10 @@ class TestMovingAverageService:
         self.assert_output_date(output[2], "2018-12-26 18:14:00", 30)
 
     def test_events_different_minutes_window_size_10(self):
+        """
+        Test events on consecutive and different minutes, window size 10.
+        Should aggregate both in a single result.
+        """
         events = [
             translation_event("2018-12-26 18:12:08.509654", 10),
             translation_event("2018-12-26 18:13:08.509654", 30),
@@ -48,6 +55,10 @@ class TestMovingAverageService:
         self.assert_output_date(output[2], "2018-12-26 18:14:00", 20)
 
     def test_events_same_minute_window_size_1(self):
+        """
+        Test events on the same minute, window size 10.
+        Should aggregate all in a single result.
+        """
         events = [
             translation_event("2018-12-26 18:12:08.509654", 10),
             translation_event("2018-12-26 18:12:09.509654", 30),
@@ -65,6 +76,9 @@ class TestMovingAverageService:
         self.assert_output_date(output[1], "2018-12-26 18:13:00", 30)
 
     def test_multiple_events_with_gap_window_size_1(self):
+        """
+        Test events with a time gap higher than window size.
+        """
         events = [
             translation_event("2018-12-26 18:12:08.509654", 10),
             translation_event("2018-12-26 18:13:08.509654", 30),
@@ -86,6 +100,9 @@ class TestMovingAverageService:
         self.assert_output_date(output[4], "2018-12-26 18:16:00", 40)
 
     def test_events_timestamps_micro_00(self):
+        """
+        Test edge case, different events on the exact minute.
+        """
         events = [
             translation_event("2018-12-26 18:12:00.000000", 10),
             translation_event("2018-12-26 18:13:00.000000", 30),
@@ -102,6 +119,9 @@ class TestMovingAverageService:
         self.assert_output_date(output[1], "2018-12-26 18:13:00", 30)
 
     def test_events_different_minutes_window_size_2(self):
+        """
+        Test events on consecutive and different minutes, window size 2.
+        """
         events = [
             translation_event("2018-12-26 18:12:08.509654", 10),
             translation_event("2018-12-26 18:13:08.509654", 30),
@@ -123,6 +143,9 @@ class TestMovingAverageService:
         self.assert_output_date(output[4], "2018-12-26 18:16:00", 35)
 
     def test_events_different_minutes_window_size_5(self):
+        """
+        Test events on different minutes, window size 5.
+        """
         events = [
             translation_event("2018-12-26 18:12:00.000000", 10),
             translation_event("2018-12-26 18:12:08.509654", 30),

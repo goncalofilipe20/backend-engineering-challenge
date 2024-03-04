@@ -50,6 +50,7 @@ class FileOutputSource(OutputSource):
         self.output_file = output_file
 
     def write(self, data):
+        # if the file already exists write in append mode
         mode = "w" if not os.path.exists(self.output_file) else "a"
         appending = mode == "a"
 
@@ -61,7 +62,8 @@ class FileOutputSource(OutputSource):
 
 
 def get_output_file_name(input_file_name: str):
+    # same path with _output suffix
     extension_index = input_file_name.rindex(".")
     name = input_file_name[:extension_index]
-    extension = input_file_name[extension_index:]
+    extension = input_file_name[extension_index + 1 :]
     return f"{name}_output.{extension}"

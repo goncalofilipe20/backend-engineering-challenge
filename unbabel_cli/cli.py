@@ -1,9 +1,11 @@
+import logging
 import os
 import typer
 
 from .data import get_output_file_name, read_event, FileOutputSource
 from .services import MADeliveryTimeService
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
 app = typer.Typer()
 
@@ -39,4 +41,7 @@ def main(
     moving_average_service = MADeliveryTimeService(
         input_source, window_size, output_source
     )
+
+    logging.info(f"Processing events from {input_file}")
     moving_average_service.process_events()
+    logging.info(f"Results written in {output_file_name}")
